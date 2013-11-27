@@ -14,11 +14,15 @@ def read_path2(file_name):
 	p = re.compile(r'^[a-z]+')
 
 	for x in lines:
-		gene = x.split(' ')
-		arr = x.split(',')
+		gene = x.split('\t')
+		tmp = x.strip(gene[0])
+		tmp1 = tmp.strip('\t')
+		tmp2 = tmp1.strip('\n')
+		arr = tmp2.split(',')
+		print arr
 		for y in arr:
-			if p.match(x,0) != None:
-				res.append([gene[0], y.strip('\n')])
+			if p.match(tmp2,0) != None:
+				res.append((gene[0], y.strip('\n')))
 	return res
 
 def read_path(file_name):
@@ -115,27 +119,32 @@ if __name__ == "__main__":
 
 	#Known Pathways
 	#reading pathway
-	path_list = ("kegg_path.txt")
-	res = read_path(path_list)
+	path_list = ("kegg_path2.txt")
+	res = read_path2(path_list)
 
-	print len(res)	
+	print res	
 	ic = 0
 	for path_name in res:
 		ic += 1
 		print ic
-		if path_name.find('hs') != -1:
+		if path_name[1].find('hs') != -1:
 			#get compoounds from one pathway
-			tmp = get_compound(path_name)
+			tmp = get_compound(path_name[1])
 			for x in tmp:
-				f1.write(path_name)
-				f1.write("\t")
+				f1.write(path_name[0])
+                                f1.write("\t")
+	                        f1.write(path_name[1])
+                                f1.write("\t")
 				#finding compounds from metabolome data
 				tmp1 = read_compound(x)
-
+				
+				#Can' find compound from experiments
 				if tmp1 != None:
 					for y in tmp1:
 						f1.write(str(y))
 						f1.write("\t")
+				else:
+					f1.write(x)
 				f1.write("\n")
 				
 	f1.close()
