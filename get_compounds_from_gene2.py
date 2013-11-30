@@ -3,7 +3,7 @@
 import urllib2
 import re
 import xlrd
-import xlwt
+import os
 
 def read_path2(file_name):
 	f = open(file_name)
@@ -68,6 +68,20 @@ def get_compound(path_name):
 
 		return res
 
+def get_path_pics(path_name):
+	url = "http://rest.kegg.jp/get/%s/image"%path_name
+	try:
+		img = urllib2.urlopen(url)
+	except:
+		return 0
+	else:
+		tmp = path_name + ".png"
+		localfile = open(os.path.basename(tmp), 'wb')
+		localfile.write(img.read())
+		img.close()
+		localfile.close()
+
+
 def get_fold_change(arr):
 	i = 0
 	cont = 0
@@ -96,7 +110,7 @@ def get_average(arr):
 	return res
 
 def read_compound(compound):
-	meta_book = xlrd.open_workbook('metabo_data_1126_neg.xlsx')
+	meta_book = xlrd.open_workbook('metabo_data_1126_pos.xlsx')
         meta_sheet = meta_book.sheet_by_index(0)
 
 	res = []
@@ -125,6 +139,7 @@ if __name__ == "__main__":
 	print res	
 	ic = 0
 	for path_name in res:
+		get_path_pics(path_name[1])
 		ic += 1
 		print ic
 		if path_name[1].find('hs') != -1:

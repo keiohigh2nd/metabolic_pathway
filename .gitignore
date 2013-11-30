@@ -3,3 +3,8 @@ ko20101128
 module_20101013
 *.png
 *.jpg
+pics
+*xlsx
+data
+*csv
+snap
