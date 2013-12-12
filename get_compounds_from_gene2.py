@@ -95,22 +95,29 @@ def get_fold_change(arr):
 			i = 0
 	return res
 
+#This function is for 4 vs 4 average. As shown, 20 is the parameter
 def get_average(arr):
 	i = 0
-	cont = 0
+	normal = 0
+	gray = 0
 	res = []
+	j = 0
 	for x in arr:
-		if i < 4:
-			cont += x
-		else:
-			tmp = float(cont)/4
-			res.append(tmp)
-			i = 0
+		if j > 1:
+			if i < 20:
+				normal += float(x)
+			else:
+				gray += float(x)
+			i += 1
+		j += 1
+	res.append(float(normal)/5)
+	p = re.compile(r'\d+')
+	res.append(float(gray)/5)
 
 	return res
 
 def read_compound(compound):
-	meta_book = xlrd.open_workbook('metabo_data_1126_pos.xlsx')
+	meta_book = xlrd.open_workbook('data/metabo_data_1126_neg_nonND.xlsx')
         meta_sheet = meta_book.sheet_by_index(0)
 
 	res = []
@@ -120,23 +127,36 @@ def read_compound(compound):
 				res.append(meta_sheet.cell(col,row).value)
 				
 	return res
-	
+
+def make_dic():
+	f = open("data/compound_id_converter.txt")
+	data = f.readlines()
+
+	dict = {}
+	for x in data:
+		tmp = x.split('\t')
+		dict.update({tmp[0]:tmp[1].strip("\n")})
+
+	return dict
 
 
 if __name__ == "__main__":
 
 	#get compound from hsa
-	f1 = open("gene_compound.txt", "w")
+	f1 = open("data/gene_compound.txt", "w")
 
 	#result txt
 	f2 = open("final_result.txt", "w")
 
 	#Known Pathways
 	#reading pathway
-	path_list = ("kegg_path2.txt")
+	path_list = ("data/kegg_path2.txt")
 	res = read_path2(path_list)
 
-	print res	
+	
+	dict = make_dic()
+	print dict
+
 	ic = 0
 	for path_name in res:
 		get_path_pics(path_name[1])
@@ -152,10 +172,10 @@ if __name__ == "__main__":
                                 f1.write("\t")
 				#finding compounds from metabolome data
 				tmp1 = read_compound(x)
-				
+				tmp2 = get_average(tmp1)
 				#Can' find compound from experiments
 				if tmp1 != None:
-					for y in tmp1:
+					for y in tmp2:
 						f1.write(str(y))
 						f1.write("\t")
 				else:

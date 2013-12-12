@@ -92,7 +92,7 @@ def get_average(arr):
 	return res
 
 def read_compound(compound):
-	meta_book = xlrd.open_workbook('metabo_data_1126_neg.xlsx')
+	meta_book = xlrd.open_workbook('metabo_data_1126_pos.xlsx')
         meta_sheet = meta_book.sheet_by_index(0)
 
 	res = []

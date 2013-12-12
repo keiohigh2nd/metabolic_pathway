@@ -43,7 +43,7 @@ def get_average(res):
 	return ko
 
 if __name__ == "__main__":
-	meta_book = xlrd.open_workbook('pos_x_data.xlsx')
+	meta_book = xlrd.open_workbook('data/neg_x_data.xlsx')
 	meta_sheet = meta_book.sheet_by_index(0)
 
 	f = open('text.txt', 'w')
