@@ -92,55 +92,62 @@ def show_connections(G,pos,neg):
 			print "Not Found"
 			
 	
-
-if __name__ == "__main__":
-
-	#Read Compound
-	pos = read_data("data/metabo_data_1126_pos_ave.csv")
-        neg = read_data("data/metabo_data_1126_neg_ave.csv")
-
-
-	#Test
-	#id = search_id("Pelargonate")
-	#print "This is the id = %s"%id
-
-
-
-	#Draw Network
-	f = open('data/node_neo.txt')
-	lines2 = f.readlines()
+def read_gene(compound_id):
+	f = open("data/gene_compound_pos.txt")
+	lines = f.readlines()
 	f.close()
 
-	G = nx.Graph()
+	for x in lines:
+		tmp = x.split("\t")
+		if compound_id == tmp[2]:
+			print "Find GENE"
+			return tmp[0]
+				
+def Draw_Graph(file_name):
+	f = open(file_name)
+        lines2 = f.readlines()
+        f.close()
 
-	for line in lines2:
-   		tmp  = line.split('\t')
-   		G.add_edge(tmp[0].strip('\n'),tmp[1].strip('\n'))
-	
+        G = nx.Graph()
 
+        for line in lines2:
+                tmp  = line.split('\t')
+                G.add_edge(tmp[0].strip('\n'),tmp[1].strip('\n'))
+
+	return G
+
+def Find_Neighbors(G, pos, neg):
 	#Write Result
-	f1 = open('result.txt','w')
+        f1 = open('result.txt','w')
 
-	for x in pos:
-		try:
-			for t in x:
-				f1.write(t)
-				f1.write('\t')
-			print x
-			tmp = nx.all_neighbors(G,x[0])
-			for x1 in tmp:
-				tmp_data = show_data(pos,neg,x1)
-				print tmp_data
-				for z in tmp_data:
-					f1.write(z)
+        for x in pos:
+                try:
+                        for t in x:
+                                f1.write(t)
+                                f1.write('\t')
+                        tmp = nx.all_neighbors(G,x[0])
+			#All neighbors
+                        for x1 in tmp:
+                                tmp_data = show_data(pos,neg,x1)
+                                print tmp_data
+                                for z in tmp_data:
+                                        f1.write(z)
+                                        f1.write('\t')
+				tmp_gene = read_gene(tmp_data[0])
+				if tmp_gene:
+					f1.write(tmp_gene)
 					f1.write('\t')
-			f1.write('\n')
-		except:
-			print "not found"
+			res_gene = read_gene(x[0])
+			#Query Compound Related Gene
+			if res_gene:
+				f1.write(res_gene) 
+                        f1.write('\n')
+                except:
+                        print "not found"
 
-	for y in neg:
-		try:
-			for t in y:
+        for y in neg:
+                try:
+                        for t in y:
                                 f1.write(t)
                                 f1.write('\t')
                         tmp = nx.all_neighbors(G,y[0])
@@ -149,14 +156,26 @@ if __name__ == "__main__":
                                 for z in tmp_data:
                                         f1.write(z)
                                         f1.write('\t')
-			f1.write('\n')
-		except:
-			print "not found"
+				tmp_gene = read_gene(tmp_data[0])
+                                if tmp_gene:
+                                        f1.write(tmp_gene)
+                                        f1.write('\t')
+                        res_gene = read_gene(x[0])
+                        #Query Compound Related Gene
+                        if res_gene:
+                                f1.write(res_gene) 
+                        f1.write('\n')
+                except:
+                        print "not found"
 
 
-	f1.close()
+if __name__ == "__main__":
 
-	print "koko"	
-	to = nx.all_neighbors(G,"C01060")
-	for k in to:
-		print k	
+	#Read Compound
+	pos = read_data("data/metabo_data_1126_pos_ave.csv")
+        neg = read_data("data/metabo_data_1126_neg_ave.csv")
+
+	G = Draw_Graph("data/node_neo.txt")
+
+	Find_Neighbors(G,pos,neg)
+
