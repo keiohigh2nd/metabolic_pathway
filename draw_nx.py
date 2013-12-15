@@ -93,7 +93,7 @@ def show_connections(G,pos,neg):
 			
 	
 def read_gene(compound_id):
-	f = open("data/gene_compound_pos.txt")
+	f = open("data/gene_compound_all.txt")
 	lines = f.readlines()
 	f.close()
 
@@ -102,6 +102,18 @@ def read_gene(compound_id):
 		if compound_id == tmp[2]:
 			print "Find GENE"
 			return tmp[0]
+
+def gene_foldchange(gene):
+	f = open("data/gene_foldchange.csv")
+	lines = f.readlines()
+	f.close()
+
+	for x in lines:
+		tmp = x.split(",")
+		print tmp
+		if tmp[0] == gene:
+			return tmp[1]
+
 				
 def Draw_Graph(file_name):
 	f = open(file_name)
@@ -133,14 +145,18 @@ def Find_Neighbors(G, pos, neg):
                                 for z in tmp_data:
                                         f1.write(z)
                                         f1.write('\t')
+				#Neighbors of query compound try to find related gene
 				tmp_gene = read_gene(tmp_data[0])
 				if tmp_gene:
 					f1.write(tmp_gene)
 					f1.write('\t')
+					f1.write(gene_foldchange(tmp_gene))
 			res_gene = read_gene(x[0])
 			#Query Compound Related Gene
 			if res_gene:
 				f1.write(res_gene) 
+				f1.write("\t")
+				f1.write(gene_foldchange(res_gene))
                         f1.write('\n')
                 except:
                         print "not found"
@@ -156,14 +172,18 @@ def Find_Neighbors(G, pos, neg):
                                 for z in tmp_data:
                                         f1.write(z)
                                         f1.write('\t')
+				#Neighbors of query compound try to find related gene
 				tmp_gene = read_gene(tmp_data[0])
                                 if tmp_gene:
                                         f1.write(tmp_gene)
                                         f1.write('\t')
+					f1.write(gene_foldchange(tmp_gene))
                         res_gene = read_gene(x[0])
                         #Query Compound Related Gene
                         if res_gene:
-                                f1.write(res_gene) 
+                                f1.write(res_gene)
+				f1.write('\t')
+				f1.write(gene_foldchange(res_gene))
                         f1.write('\n')
                 except:
                         print "not found"
@@ -178,4 +198,4 @@ if __name__ == "__main__":
 	G = Draw_Graph("data/node_neo.txt")
 
 	Find_Neighbors(G,pos,neg)
-
+	
