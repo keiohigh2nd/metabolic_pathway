@@ -110,7 +110,6 @@ def gene_foldchange(gene):
 
 	for x in lines:
 		tmp = x.split(",")
-		print tmp
 		if tmp[0] == gene:
 			return tmp[1]
 
@@ -134,68 +133,76 @@ def Find_Neighbors(G, pos, neg):
 
         for x in pos:
                 try:
-                        for t in x:
-                                f1.write(t)
-                                f1.write('\t')
                         tmp = nx.all_neighbors(G,x[0])
+                        for t in x:
+				print t
+                                f1.write(t.strip('\r\n'))
+                                f1.write('\t')
 			#All neighbors
                         for x1 in tmp:
                                 tmp_data = show_data(pos,neg,x1)
                                 print tmp_data
                                 for z in tmp_data:
-                                        f1.write(z)
+					print z
+                                        f1.write(z.strip('\r\n'))
                                         f1.write('\t')
 				#Neighbors of query compound try to find related gene
 				tmp_gene = read_gene(tmp_data[0])
 				if tmp_gene:
-					f1.write(tmp_gene)
+					print tmp_gene
+					f1.write(tmp_gene.strip('\r\n'))
 					f1.write('\t')
-					f1.write(gene_foldchange(tmp_gene))
+					f1.write(gene_foldchange(tmp_gene).strip('\n'))
 			res_gene = read_gene(x[0])
 			#Query Compound Related Gene
 			if res_gene:
-				f1.write(res_gene) 
+				f1.write(res_gene.strip('\r\n')) 
 				f1.write("\t")
-				f1.write(gene_foldchange(res_gene))
+				f1.write(gene_foldchange(res_gene).strip('\n'))
                         f1.write('\n')
                 except:
                         print "not found"
 
         for y in neg:
                 try:
-                        for t in y:
-                                f1.write(t)
-                                f1.write('\t')
                         tmp = nx.all_neighbors(G,y[0])
+                        for t in y:
+                                f1.write(t.strip('\r\n'))
+                                f1.write('\t')
                         for y1 in tmp:
                                 tmp_data = show_data(pos,neg,y1)
                                 for z in tmp_data:
-                                        f1.write(z)
+                                        f1.write(z.strip('\r\n'))
                                         f1.write('\t')
 				#Neighbors of query compound try to find related gene
 				tmp_gene = read_gene(tmp_data[0])
                                 if tmp_gene:
-                                        f1.write(tmp_gene)
+                                        f1.write(tmp_gene.strip('\n'))
                                         f1.write('\t')
-					f1.write(gene_foldchange(tmp_gene))
-                        res_gene = read_gene(x[0])
+					f1.write(gene_foldchange(tmp_gene).strip('\n'))
+                        res_gene = read_gene(y[0])
                         #Query Compound Related Gene
                         if res_gene:
-                                f1.write(res_gene)
+                                f1.write(res_gene.strip('\r\n'))
 				f1.write('\t')
-				f1.write(gene_foldchange(res_gene))
+				f1.write(gene_foldchange(res_gene).strip('\n'))
                         f1.write('\n')
                 except:
                         print "not found"
-
+	f1.close()
 
 if __name__ == "__main__":
 
 	#Read Compound
 	pos = read_data("data/metabo_data_1126_pos_ave.csv")
         neg = read_data("data/metabo_data_1126_neg_ave.csv")
-
+	
 	G = Draw_Graph("data/node_neo.txt")
 
+	#Test
+	tmp = nx.all_neighbors(G,"C00041")
+	for x in tmp:
+		print x
+	
 	Find_Neighbors(G,pos,neg)
 	
