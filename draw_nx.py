@@ -110,7 +110,7 @@ def gene_foldchange(gene):
 
 	for x in lines:
 		tmp = x.split(",")
-		if tmp[0] == gene:
+		if tmp[0].upper() == gene:
 			return tmp[1]
 
 				
@@ -135,24 +135,21 @@ def Find_Neighbors(G, pos, neg):
                 try:
                         tmp = nx.all_neighbors(G,x[0])
                         for t in x:
-				print t
                                 f1.write(t.strip('\r\n'))
                                 f1.write('\t')
 			#All neighbors
                         for x1 in tmp:
                                 tmp_data = show_data(pos,neg,x1)
-                                print tmp_data
                                 for z in tmp_data:
-					print z
                                         f1.write(z.strip('\r\n'))
                                         f1.write('\t')
 				#Neighbors of query compound try to find related gene
 				tmp_gene = read_gene(tmp_data[0])
 				if tmp_gene:
-					print tmp_gene
 					f1.write(tmp_gene.strip('\r\n'))
 					f1.write('\t')
 					f1.write(gene_foldchange(tmp_gene).strip('\n'))
+					f1.write('\t')
 			res_gene = read_gene(x[0])
 			#Query Compound Related Gene
 			if res_gene:
@@ -161,7 +158,9 @@ def Find_Neighbors(G, pos, neg):
 				f1.write(gene_foldchange(res_gene).strip('\n'))
                         f1.write('\n')
                 except:
-                        print "not found"
+                        #print "not found"
+			#f1.write(x[1])
+                        f1.write('\n')
 
         for y in neg:
                 try:
@@ -180,6 +179,7 @@ def Find_Neighbors(G, pos, neg):
                                         f1.write(tmp_gene.strip('\n'))
                                         f1.write('\t')
 					f1.write(gene_foldchange(tmp_gene).strip('\n'))
+					f1.write('\t')
                         res_gene = read_gene(y[0])
                         #Query Compound Related Gene
                         if res_gene:
@@ -188,7 +188,9 @@ def Find_Neighbors(G, pos, neg):
 				f1.write(gene_foldchange(res_gene).strip('\n'))
                         f1.write('\n')
                 except:
-                        print "not found"
+                        #print "not found"
+			#f1.write(y[1])
+                        f1.write('\n')
 	f1.close()
 
 if __name__ == "__main__":
@@ -200,9 +202,11 @@ if __name__ == "__main__":
 	G = Draw_Graph("data/node_neo.txt")
 
 	#Test
-	tmp = nx.all_neighbors(G,"C00041")
+	"""
+	tmp = nx.all_neighbors(G,"C00311")
 	for x in tmp:
 		print x
-	
+	"""
+
 	Find_Neighbors(G,pos,neg)
-	
+
