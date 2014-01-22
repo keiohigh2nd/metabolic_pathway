@@ -85,11 +85,16 @@ def enzyme_foldchange(enzyme):
 
 if __name__ == "__main__":
 
-	#G = nx.Graph()
-	enzyme_foldchange("Pdp2")	
+	G = nx.Graph()
+	f = open("data/gene_foldchange.csv","r")
+	lines = f.readlines()
+	
 	##related enzyme from gene
-	tmp = find_enzyme("Pdp2")
-	for x in tmp:
-		reaction = find_related_reaction(x)
-		rpair = get_reaction_compound(reaction)
-		#G.add_edge(rpair[0].strip('\n'),rpair.strip('\n'),color=enzyme_foldchange("pdp"))
+	for gene in lines:
+		tmp = find_enzyme(gene.strip())
+		for x in tmp:
+			reaction = find_related_reaction(x)
+			rpair = get_reaction_compound(reaction)
+			G.add_edge(rpair[0].strip('\n'),rpair[1].strip('\n'),color=enzyme_foldchange(gene))
+
+	print G.edges()
