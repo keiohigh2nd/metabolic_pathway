@@ -68,6 +68,24 @@ def get_compound(path_name):
 
 		return res
 
+def find_enzyme(enzyme):
+        url = "http://rest.kegg.jp/find/enzyme/%s/"%enzyme
+        res = []
+
+        try:
+                htmldata = urllib2.urlopen(url)
+        except:
+                res.append('')
+                return res
+
+        else:
+                tmp = unicode(htmldata.read(),"utf-8")
+                htmldata.close()
+		lines = tmp.readlines()
+		for x in lines:
+			print x
+
+
 def get_path_pics(path_name):
 	url = "http://rest.kegg.jp/get/%s/image"%path_name
 	try:
