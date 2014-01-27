@@ -9,3 +9,5 @@ data
 *csv
 snap
 *.pyc
+*.gml
+*.gexf

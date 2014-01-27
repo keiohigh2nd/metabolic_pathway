@@ -130,14 +130,6 @@ def enzyme_foldchange(enzyme):
 				return "blue"
 			return "green"
 
-def enzyme_foldchange_value(enzyme):
-        f = open("data/gene_foldchange.csv","r")
-        lines = f.readlines()
-        for x in lines:
-                if x.find(enzyme) != -1:
-                        tmp = x.split(",")
-			return tmp[1]
-
 def extract_alphabet_from_gene(gene):
 	for i in xrange(len(gene)):
 		if gene[i].isdigit() == True:
@@ -163,57 +155,29 @@ def check_reaction_compound(compound):
 	return 0
 
 def draw_neighbor(G,compound):
-	tmp = nx.all_neighbors(G,compound)
+	tmp = G.neighbors(str(compound))
 	Gpart = nx.Graph()
+	print tmp
 	for x in tmp:
+		print G.edge[x][compound]['color']
 		Gpart.add_edge(x,compound,color=G.edge[x][compound]['color'])
 	nx.draw(Gpart)
-        plt.savefig("path_test.png")
-        nx.draw_graphviz(Gpart)
-        nx.write_dot(Gpart,'file_test.dot')
-
-
+	name = "path_%s.png"%str(compound)
+        plt.savefig(name)
+        
+	nx.draw_graphviz(Gpart)
+	name1 = "file_%s.dot"%str(compound)
+        nx.write_dot(Gpart,'name1')
 
 
 if __name__ == "__main__":
 	import itertools
 	import matplotlib.pyplot as plt
-
-
-	G = nx.Graph()
 	
-	##Read gene data
-	f = open("data/gene_foldchange.csv","r")
-	lines = f.readlines()
-	f.close()
-
-	f1 = open("enzyme_reaction_pair.txt","w")
-	##related enzyme from gene
-	for gene in lines:
-		tmp = find_enzyme(extract_alphabet_from_gene(gene.strip()))
-		f1.write(gene.strip())
-		f1.write("\t")
-		for x in tmp:
-			reaction = find_related_equation(x)
-			f1.write(x)
-			f1.write("\t")
-			print x
-			for reac in reaction:
-				if reac != "None":
-					f1.write(str(reac))
-					f1.write("\t")
-					f1.write(str(reac))
-			if len(reaction) != 1:
-				combi = list(itertools.combinations(range(len(reaction)), 2))
-				for x in combi:
-					if check_reaction_compound(reaction[x[0]]) == 0 and check_reaction_compound(reaction[x[1]]) == 0:
-                				G.add_edge(reaction[x[0]].strip('\n'),reaction[x[1]].strip('\n'),color=enzyme_foldchange(gene), weight=enzyme_foldchange_value(gene))
-			f1.write("\n")
-	f1.close()
-	
-	print G.edges()
-	nx.write_gexf(G, "test.gexf")
-	draw_neighbor(G,"D-glucose 6-phosphate")
+	H = nx.read_gexf("test.gexf")
+	#H=nx.read_gml('test.gml')
+	print H.nodes()
+	draw_neighbor(H,"D-glucose 6-phosphate")
 
 	"""
 	nx.draw(G)
