@@ -65,7 +65,37 @@ def find_related_reaction(enzyme):
 				reac = tmp[1].split(" ")
 				for x in reac:
 					res.append(x)
+		print res
 		return res
+
+def find_related_equation(enzyme):
+        url = "http://rest.kegg.jp/get/%s/"%enzyme
+        res = []
+
+        try:
+                htmldata = urllib2.urlopen(url)
+        except:
+                res.append('')
+                return res
+
+        else:
+                tmp = unicode(htmldata.read(),"utf-8")
+                htmldata.close()
+                lines = tmp.split("\n")
+                for x in lines:
+                        if x.find("REACTION") != -1:
+                                tmp = x.split("    ")
+                                reac = tmp[1].split("=")
+                                for x in reac:
+                                        rea = x.split("+")
+					for y in rea:
+						if y.find("[RN") != -1:
+							tmp = y.split(" ")
+							tmp1 = y.strip(tmp[-1])
+							res.append(tmp1.strip())
+						else:
+							res.append(y.strip())
+                return res
 
 def get_reaction_compound(reaction):
         url = "http://rest.kegg.jp/get/%s"%reaction.strip()
@@ -105,10 +135,31 @@ def extract_alphabet_from_gene(gene):
 		if gene[i].isdigit() == True:
 			return gene[0:i]
 
+def combination_reaction(G,reaction,gene):
+	tmp = list(itertools.combinations(range(len(reaction)), 2))
+	for x in tmp:
+		G.add_edge(reaction[x[0]].strip('\n'),reaction[x[1]].strip('\n'),color=enzyme_foldchange(gene))
+	return G
+
+def check_reaction_compound(compound):
+	if compound.find("H2O") != -1:
+		return 1
+	if compound.find("CO2") != -1:
+		return 1
+	if compound.find("NH3") != -1:
+		return 1
+	if compound.find("H") != -1:
+		return 1
+	if not compound:
+		return 1
+	return 0
 if __name__ == "__main__":
-	print extract_alphabet_from_gene("Pdp2")
+	import itertools
+	import matplotlib.pyplot as plt
 
 	G = nx.Graph()
+	
+	##Read gene data
 	f = open("data/gene_foldchange.csv","r")
 	lines = f.readlines()
 	f.close()
@@ -120,15 +171,25 @@ if __name__ == "__main__":
 		f1.write(gene.strip())
 		f1.write("\t")
 		for x in tmp:
+			reaction = find_related_equation(x)
+			f1.write(x)
+			f1.write("\t")
 			print x
-			reaction = find_related_reaction(x)
 			for reac in reaction:
-				rpair = get_reaction_compound(reac)
-				if rpair != "None":	
-					f1.write(rpair[0])
+				if reac != "None":
+					f1.write(str(reac))
 					f1.write("\t")
-					f1.write(str(rpair[1]))
-					f1.write("\n")
-					G.add_edge(rpair[0].strip('\n'),rpair[1].strip('\n'),color=enzyme_foldchange(gene))
-
+					f1.write(str(reac))
+			if len(reaction) != 1:
+				combi = list(itertools.combinations(range(len(reaction)), 2))
+				for x in combi:
+					if check_reaction_compound(reaction[x[0]]) == 0 and check_reaction_compound(reaction[x[1]]) == 0:
+                				G.add_edge(reaction[x[0]].strip('\n'),reaction[x[1]].strip('\n'),color=enzyme_foldchange(gene))
+			f1.write("\n")
+	f1.close()
+	
 	print G.edges()
+	nx.draw(G)
+	plt.savefig("path.png")
+	nx.draw_graphviz(G)
+	nx.write_dot(G,'file.dot')
