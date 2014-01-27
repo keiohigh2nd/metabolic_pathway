@@ -11,3 +11,4 @@ snap
 *.pyc
 *.gml
 *.gexf
+*.dot
