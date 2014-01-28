@@ -124,11 +124,12 @@ def enzyme_foldchange(enzyme):
 	for x in lines:
 		if x.find(enzyme) != -1:
 			tmp = x.split(",")
-			if tmp[1] >= 1.5:
+			if float(tmp[1]) > 1.5:
 				return "red"
-			if tmp[1] <= 0.8:
+			elif float(tmp[1]) < 1.0:
 				return "blue"
-			return "green"
+			else:
+				return "green"
 
 def enzyme_foldchange_value(enzyme):
         f = open("data/gene_foldchange.csv","r")
@@ -197,7 +198,6 @@ if __name__ == "__main__":
 			reaction = find_related_equation(x)
 			f1.write(x)
 			f1.write("\t")
-			print x
 			for reac in reaction:
 				if reac != "None":
 					f1.write(str(reac))

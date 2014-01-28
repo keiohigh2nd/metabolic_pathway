@@ -159,24 +159,24 @@ def draw_neighbor(G,compound):
 	Gpart = nx.Graph()
 	print tmp
 	for x in tmp:
-		print G.edge[x][compound]['color']
-		Gpart.add_edge(x,compound,color=G.edge[x][compound]['color'])
+		#print x
+		print G.edge[x][compound]['weight']
+		Gpart.add_edge(x,compound,color=G.edge[x][compound]['color'],weight=G.edge[x][compound]['weight'])
 	nx.draw(Gpart)
 	name = "path_%s.png"%str(compound)
         plt.savefig(name)
         
 	nx.draw_graphviz(Gpart)
 	name1 = "file_%s.dot"%str(compound)
-        nx.write_dot(Gpart,'name1')
+        nx.write_dot(Gpart,name1)
 
 
 if __name__ == "__main__":
 	import itertools
 	import matplotlib.pyplot as plt
 	
-	H = nx.read_gexf("test.gexf")
+	H = nx.read_gexf("color_weighted_map_1.gexf")
 	#H=nx.read_gml('test.gml')
-	print H.nodes()
 	draw_neighbor(H,"D-glucose 6-phosphate")
 
 	"""
