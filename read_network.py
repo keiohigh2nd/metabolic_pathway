@@ -175,13 +175,12 @@ if __name__ == "__main__":
 	import itertools
 	import matplotlib.pyplot as plt
 	
-	H = nx.read_gexf("color_weighted_map_1.gexf")
-	#H=nx.read_gml('test.gml')
-	draw_neighbor(H,"D-glucose 6-phosphate")
+	G = nx.read_gexf("compound_test.gexf")
+	#draw_neighbor(H,"S-adenosyl-L-methionine")
 
-	"""
+	
 	nx.draw(G)
 	plt.savefig("path.png")
 	nx.draw_graphviz(G)
 	nx.write_dot(G,'file.dot')
-	"""
+	

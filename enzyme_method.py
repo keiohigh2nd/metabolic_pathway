@@ -161,7 +161,9 @@ def check_reaction_compound(compound):
 		return 1
 	if not compound:
 		return 1
-	return 0
+	if check_compound(compound) == 1:
+		return 0
+	return 1
 
 def draw_neighbor(G,compound):
 	tmp = nx.all_neighbors(G,compound)
@@ -173,8 +175,68 @@ def draw_neighbor(G,compound):
         nx.draw_graphviz(Gpart)
         nx.write_dot(Gpart,'file_test.dot')
 
+def check_compound(compound):
+	pos = read_data("data/metabo_data_1126_pos_ave.csv")
+        neg = read_data("data/metabo_data_1126_neg_ave.csv")
 
+	for x in pos:
+		tmp = compound.lower()
+		if str(tmp).find(str(x[1].lower())) != -1:
+			return 1
 
+        for x in neg:
+                tmp = compound.lower()
+                if str(tmp).find(str(x[1].lower())) != -1:
+                        return 1
+	return 0
+
+def get_compound_foldchange(compound):
+        pos = read_data("data/metabo_data_1126_pos_ave.csv")
+        neg = read_data("data/metabo_data_1126_neg_ave.csv")
+
+        for x in pos:
+                tmp = compound.lower()
+                if str(tmp).find(str(x[1].lower())) != -1:
+			if float(x[2]) != 0:
+                        	return float(x[3])/float(x[2])
+
+     	for x in neg:
+                tmp = compound.lower()
+                if str(tmp).find(str(x[1].lower())) != -1:
+			if float(x[2]) != 0:
+                        	return float(x[3])/float(x[2])
+        
+	return -1
+			
+
+def read_data(filename):
+        f = open(filename)
+        data = f.readlines()
+        f.close()
+
+        res = []
+        #If csv "," or "\t"
+        for x in data:
+                tmp = x.split(',')
+                arr = []
+                for y in tmp:
+                        if y:
+                                arr.append(y.strip('\r'))
+                res.append(arr)
+
+        return res
+
+def write_edge(cx,cy):
+        f2 = open("enzyme_edge_list.txt","a")
+        f2.write(str(cx))
+        f2.write("\t")
+        f2.write(str(get_compound_foldchange(cx)))
+        f2.write("\t")
+        f2.write(str(cy))
+        f2.write("\t")
+        f2.write(str(get_compound_foldchange(cy)))
+        f2.write("\n")
+        f2.close()
 
 if __name__ == "__main__":
 	import itertools
@@ -207,13 +269,14 @@ if __name__ == "__main__":
 				combi = list(itertools.combinations(range(len(reaction)), 2))
 				for x in combi:
 					if check_reaction_compound(reaction[x[0]]) == 0 and check_reaction_compound(reaction[x[1]]) == 0:
-                				G.add_edge(reaction[x[0]].strip('\n'),reaction[x[1]].strip('\n'),color=enzyme_foldchange(gene), weight=enzyme_foldchange_value(gene))
+                				write_edge(reaction[x[0]],reaction[x[1]])
+						G.add_edge(reaction[x[0]].strip('\n'),reaction[x[1]].strip('\n'),color=enzyme_foldchange(gene), weight=enzyme_foldchange_value(gene))
 			f1.write("\n")
 	f1.close()
 	
 	print G.edges()
 	nx.write_gexf(G, "test.gexf")
-	draw_neighbor(G,"D-glucose 6-phosphate")
+	#draw_neighbor(G,"D-glucose 6-phosphate")
 
 	"""
 	nx.draw(G)
