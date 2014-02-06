@@ -41,7 +41,7 @@ def find_enzyme(enzyme):
 			f.close()
 		for x in lines:
 			if x != "":
-				print find_enzyme_digit(x)
+				#print find_enzyme_digit(x)
 				res.append(find_enzyme_digit(x))
 		return res
 
@@ -65,7 +65,6 @@ def find_related_reaction(enzyme):
 				reac = tmp[1].split(" ")
 				for x in reac:
 					res.append(x)
-		print res
 		return res
 
 def find_related_equation(enzyme):
@@ -170,17 +169,48 @@ def draw_neighbor(G,compound):
 	name1 = "file_%s.dot"%str(compound)
         nx.write_dot(Gpart,name1)
 
-
+def trace_node(G,first_node):
+	edges = G.edges(first_node)
+	if len(edges) == 1:
+		print "This is the terminal"
+		return 0
+	
+	max_edge = 0
+	max_edge2 = 0
+	max_i = 0
+	max_i2 = 0
+	i = 0
+	for x in edges:
+		if max_edge < G.edge[first_node][x[1]]['weight']:
+			max_edge = G.edge[first_node][x[1]]['weight']
+			max_i = i
+		else:
+			if max_edge2 < G.edge[first_node][x[1]]['weight']:
+				max_edge2 = G.edge[first_node][x[1]]['weight']
+                               	max_i2 = i
+		i += 1
+	#print G.edge[first_node][edges[max_i][1]]['color']
+	print first_node,edges[max_i][1],edges[max_i2][1], len(edges)
+	#If the biggest edge is original edges
+	if str(edges[max_i][1]) == str(first_node):
+		print "second"
+		return trace_node(G,edges[max_i2][1])
+	else:
+		print "first"
+		return trace_node(G,edges[max_i][1])
+	
 if __name__ == "__main__":
 	import itertools
 	import matplotlib.pyplot as plt
 	
-	G = nx.read_gexf("compound_test.gexf")
-	#draw_neighbor(H,"S-adenosyl-L-methionine")
+	G = nx.read_gexf("compound_foldchange_test.gexf")
+	#draw_neighbor(G,"S-adenosyl-L-methionine")
 
-	
+	trace_node(G,"ADP")
+		
+	"""
 	nx.draw(G)
 	plt.savefig("path.png")
 	nx.draw_graphviz(G)
 	nx.write_dot(G,'file.dot')
-	
+	"""

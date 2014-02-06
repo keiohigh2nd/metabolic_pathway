@@ -161,7 +161,7 @@ def check_reaction_compound(compound):
 		return 1
 	if not compound:
 		return 1
-	if check_compound(compound) == 1:
+	if check_compound_2(compound) == 1:
 		return 0
 	return 1
 
@@ -181,6 +181,7 @@ def check_compound(compound):
 
 	for x in pos:
 		tmp = compound.lower()
+		print x
 		if str(tmp).find(str(x[1].lower())) != -1:
 			return 1
 
@@ -188,6 +189,42 @@ def check_compound(compound):
                 tmp = compound.lower()
                 if str(tmp).find(str(x[1].lower())) != -1:
                         return 1
+	return 0
+
+def check_compound_1(compound):
+        pos = read_data("data/metabo_data_1126_pos_ave.csv")
+        neg = read_data("data/metabo_data_1126_neg_ave.csv")
+
+        for x in pos:
+                tmp = compound.lower()
+                if str(tmp) == str(x[1].lower()):
+                        return 1
+
+        for x in neg:
+		tmp = compound.lower()
+		if str(tmp) == str(x[1].lower()):
+                        return 1
+        return 0
+
+def check_compound_2(compound):
+        pos = read_data("data/metabo_data_1126_pos_ave.csv")
+        neg = read_data("data/metabo_data_1126_neg_ave.csv")
+
+        for x in pos:
+                tmp = compound.lower()
+                if str(tmp).find(str(x[1].lower())) != -1:
+			if float(x[2]) != 0:
+                        	return evaluate_foldchange(float(x[3])/float(x[2]))
+
+        for x in neg:
+                tmp = compound.lower()
+                if str(tmp).find(str(x[1].lower())) != -1:
+			if float(x[2]) != 0:
+                        	return evaluate_foldchange(float(x[3])/float(x[2]))
+
+def evaluate_foldchange(val):
+	if val > 1.3 or val < 0.7:
+		return 1
 	return 0
 
 def get_compound_foldchange(compound):
