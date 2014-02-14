@@ -126,10 +126,12 @@ def enzyme_foldchange(enzyme):
 			tmp = x.split(",")
 			if float(tmp[1]) > 1.5:
 				return "red"
-			elif float(tmp[1]) < 1.0:
+			elif float(tmp[1]) >= 1.2:
 				return "blue"
-			else:
+			elif float(tmp[1]) < 0.6:
 				return "green"
+			else:
+				return "black"
 
 def enzyme_foldchange_value(enzyme):
         f = open("data/gene_foldchange.csv","r")
@@ -312,12 +314,12 @@ if __name__ == "__main__":
 	f1.close()
 	
 	print G.edges()
-	nx.write_gexf(G, "test.gexf")
+	nx.write_gexf(G, "test_colors.gexf")
 	#draw_neighbor(G,"D-glucose 6-phosphate")
 
-	"""
+	
 	nx.draw(G)
-	plt.savefig("path.png")
+	#plt.savefig("path.png")
 	nx.draw_graphviz(G)
 	nx.write_dot(G,'file.dot')
-	"""
+	

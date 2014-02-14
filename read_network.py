@@ -125,9 +125,11 @@ def enzyme_foldchange(enzyme):
 			tmp = x.split(",")
 			if tmp[1] >= 1.5:
 				return "red"
-			if tmp[1] <= 0.8:
+			if tmp[1] >= 1.2:
 				return "blue"
-			return "green"
+			if tmp[1] <= 0.6:
+				return "green"
+			return "black"
 
 def extract_alphabet_from_gene(gene):
 	for i in xrange(len(gene)):
@@ -169,16 +171,35 @@ def draw_neighbor(G,compound):
 	name1 = "file_%s.dot"%str(compound)
         nx.write_dot(Gpart,name1)
 
+def search_biggest_node(G,node):
+	edges = G.edges(node)
+	if len(edges) <= 2:
+                print "This is the terminal"
+                return 0
+	max_edge = 0
+	max_i = 0
+	i = 0
+	for x in edges:
+                if max_edge < G.edge[node][x[1]]['weight']:
+                        max_edge = G.edge[node][x[1]]['weight']
+                        max_i = i
+		i += 1
+	#print edges[max_i][1]
+	# Edges = [self, toward]
+	return edges[max_i][1]
+
 def trace_node(G,first_node):
 	edges = G.edges(first_node)
-	if len(edges) == 1:
+	if len(edges) <= 2:
 		print "This is the terminal"
 		return 0
 	
 	max_edge = 0
 	max_edge2 = 0
+	max_edge3 = 0
 	max_i = 0
 	max_i2 = 0
+        max_i3 = 0
 	i = 0
 	for x in edges:
 		if max_edge < G.edge[first_node][x[1]]['weight']:
@@ -188,29 +209,77 @@ def trace_node(G,first_node):
 			if max_edge2 < G.edge[first_node][x[1]]['weight']:
 				max_edge2 = G.edge[first_node][x[1]]['weight']
                                	max_i2 = i
+			else:
+				if max_edge3 < G.edge[first_node][x[1]]['weight']:
+                                	max_edge3 = G.edge[first_node][x[1]]['weight']
+                                	max_i3 = i
+
 		i += 1
 	#print G.edge[first_node][edges[max_i][1]]['color']
 	print first_node,edges[max_i][1],edges[max_i2][1], len(edges)
 	#If the biggest edge is original edges
-	if str(edges[max_i][1]) == str(first_node):
-		print "second"
-		return trace_node(G,edges[max_i2][1])
+        return trace_node_rec(G,edges[max_i][1],first_node)
+
+def trace_node_rec(G,first_node, second_node):
+        edges = G.edges(first_node)
+        if len(edges) <= 2:
+                print "This is the terminal"
+                return 0
+
+        max_edge = 0
+        max_edge2 = 0
+        max_edge3 = 0
+        max_i = 0
+        max_i2 = 0
+        max_i3 = 0
+        i = 0
+        for x in edges:
+                if max_edge < G.edge[first_node][x[1]]['weight']:
+                        max_edge = G.edge[first_node][x[1]]['weight']
+                        max_i = i
+                else:
+                        if max_edge2 < G.edge[first_node][x[1]]['weight']:
+                                max_edge2 = G.edge[first_node][x[1]]['weight']
+                                max_i2 = i
+                        else:
+                                if max_edge3 < G.edge[first_node][x[1]]['weight']:
+                                        max_edge3 = G.edge[first_node][x[1]]['weight']
+                                        max_i3 = i
+
+                i += 1
+        #print G.edge[first_node][edges[max_i][1]]['color']
+        print first_node,edges[max_i][1],edges[max_i2][1], len(edges)
+        #If the biggest edge is original edges
+        if str(edges[max_i][1]) == str(second_node):
+		print search_biggest_node(G,second_node)
+                if str(edges[max_i2][1]) != str(search_biggest_node(G,second_node)):
+                        print "second"
+                        return trace_node_rec(G,edges[max_i2][1],first_node)
+                else:
+                        if len(edges) > 3:
+                                print "third"
+                                return trade_node_rec(G,edges[max_i3][1],first_node)
 	else:
-		print "first"
-		return trace_node(G,edges[max_i][1])
+                print "first"
+                return trace_node_rec(G,edges[max_i][1],first_node)
+
+      
+
+
 	
 if __name__ == "__main__":
 	import itertools
 	import matplotlib.pyplot as plt
 	
-	G = nx.read_gexf("compound_foldchange_test.gexf")
+	G = nx.read_gexf("test_colors.gexf")
 	#draw_neighbor(G,"S-adenosyl-L-methionine")
 
+	#search_biggest_node(G,"ADP")
 	trace_node(G,"ADP")
 		
-	"""
+	"""	
 	nx.draw(G)
-	plt.savefig("path.png")
+	#plt.savefig("path.png")
 	nx.draw_graphviz(G)
 	nx.write_dot(G,'file.dot')
 	"""
