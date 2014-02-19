@@ -248,6 +248,7 @@ def trace_node_rec(G,first_node, second_node):
 
                 i += 1
         #print G.edge[first_node][edges[max_i][1]]['color']
+	print "first node---biggest node---second biggest node---lenght of edges"
         print first_node,edges[max_i][1],edges[max_i2][1], len(edges)
         #If the biggest edge is original edges
         if str(edges[max_i][1]) == str(second_node):

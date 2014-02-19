@@ -131,7 +131,7 @@ def enzyme_foldchange(enzyme):
 			elif float(tmp[1]) < 0.6:
 				return "green"
 			else:
-				return "black"
+				return "white"
 
 def enzyme_foldchange_value(enzyme):
         f = open("data/gene_foldchange.csv","r")
@@ -199,6 +199,8 @@ def check_compound_1(compound):
 
         for x in pos:
                 tmp = compound.lower()
+		print "opai"
+		print x[2]
                 if str(tmp) == str(x[1].lower()):
                         return 1
 
@@ -225,7 +227,7 @@ def check_compound_2(compound):
                         	return evaluate_foldchange(float(x[3])/float(x[2]))
 
 def evaluate_foldchange(val):
-	if val > 1.3 or val < 0.7:
+	if val > 2.0 or val < 0.5:
 		return 1
 	return 0
 
