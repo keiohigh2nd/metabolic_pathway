@@ -265,6 +265,46 @@ def trace_node_rec(G,first_node, second_node):
                 return trace_node_rec(G,edges[max_i][1],first_node)
 
       
+def info_network(G):
+	from networkx.algorithms import bipartite 
+	from decimal import Decimal
+
+	print G.number_of_nodes()
+	print G.number_of_edges()
+
+	print "average_neighbor_degree"
+	dict = nx.average_neighbor_degree(G) 
+	list1 = dict.keys()
+	list2 = dict.values()
+	print list1
+	print list2
+
+	print "degree_assortativity_coefficient"
+	print nx.degree_assortativity_coefficient(G)
+ 
+	print "degree_pearson_correlation_coefficient"
+	print nx.degree_pearson_correlation_coefficient(G)  
+	#print nx.k_nearest_neighbors(G)
+	print "STOP HERE"
+ 
+	print "bipartite.closeness_centrality(G,G.node)"
+	dict2 = bipartite.closeness_centrality(G,G.node)
+	list3 = dict2.values()
+	print list3
+ 
+	print "nx.degree_centrality(G)"
+	dict3 = nx.degree_centrality(G)
+	list4 = dict3.values()
+	print list4
+ 
+	print "nx.betweenness_centrality(G)"
+	dict4 = nx.betweenness_centrality(G)
+	list5 = dict4.values()
+	print list5
+
+	print "hits_numpy"
+	dict5 = nx.hits_numpy(G)
+ 	print dict5
 
 
 	
@@ -275,8 +315,9 @@ if __name__ == "__main__":
 	G = nx.read_gexf("test_colors.gexf")
 	#draw_neighbor(G,"S-adenosyl-L-methionine")
 
+	info_network(G)
 	#search_biggest_node(G,"ADP")
-	trace_node(G,"ADP")
+	#trace_node(G,"ADP")
 		
 	"""	
 	nx.draw(G)

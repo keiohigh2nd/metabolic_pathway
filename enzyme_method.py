@@ -283,11 +283,19 @@ if __name__ == "__main__":
 	import itertools
 	import matplotlib.pyplot as plt
 
+	"""
+	Workflow of this script:
+	  1:Read gene_foldchange file
+	  2:Find gene_related reaction(KEGG ACCESS)
+	  3:Get compounds from reaction
+	  4:Built network(Using NetworkX)
+	  5:Mark up important edges
+	"""
 
 	G = nx.Graph()
 	
 	##Read gene data
-	f = open("data/gene_foldchange.csv","r")
+	f = open("data/t_All_GSEA.csv","r")
 	lines = f.readlines()
 	f.close()
 
