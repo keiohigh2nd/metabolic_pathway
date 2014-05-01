@@ -153,6 +153,7 @@ def combination_reaction(G,reaction,gene):
 	return G
 
 def check_reaction_compound(compound):
+	#If okay return 0 , not okay 1
 	if compound.find("H2O") != -1:
 		return 1
 	if compound.find("CO2") != -1:
@@ -303,24 +304,30 @@ if __name__ == "__main__":
 	##related enzyme from gene
 	for gene in lines:
 		tmp = find_enzyme(extract_alphabet_from_gene(gene.strip()))
-		f1.write(gene.strip())
-		f1.write("\t")
+		f1.write(gene.strip("\n"))
+		f1.write("\n")
 		for x in tmp:
 			reaction = find_related_equation(x)
+			"""
 			f1.write(x)
 			f1.write("\t")
 			for reac in reaction:
 				if reac != "None":
-					f1.write(str(reac))
-					f1.write("\t")
-					f1.write(str(reac))
+					if check_reaction_compound(reac) == 0:
+						f1.write(str(reac))
+						f1.write("\t")
+			"""
 			if len(reaction) != 1:
 				combi = list(itertools.combinations(range(len(reaction)), 2))
-				for x in combi:
-					if check_reaction_compound(reaction[x[0]]) == 0 and check_reaction_compound(reaction[x[1]]) == 0:
-                				write_edge(reaction[x[0]],reaction[x[1]])
-						G.add_edge(reaction[x[0]].strip('\n'),reaction[x[1]].strip('\n'),color=enzyme_foldchange(gene), weight=enzyme_foldchange_value(gene))
-			f1.write("\n")
+				for y in combi:
+					if check_reaction_compound(reaction[y[0]]) == 0 and check_reaction_compound(reaction[y[1]]) == 0:
+						f1.write(x.strip('\n'))
+                        			f1.write("\t")
+						f1.write(str(reaction[y[0]].strip('\n')))
+						f1.write("\t")
+						f1.write(str(reaction[y[1]].strip('\n')))
+						G.add_edge(reaction[y[0]].strip('\n'),reaction[y[1]].strip('\n'),color=enzyme_foldchange(gene), weight=enzyme_foldchange_value(gene))
+						f1.write("\n")
 	f1.close()
 	
 	print G.edges()
